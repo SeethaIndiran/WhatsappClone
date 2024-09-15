@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="130dp">
+
+
+    <TextView
+        android:id="@+id/caller_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kumar"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"/>
+
+    <TextView
+        android:id="@+id/call_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Incoming video call.."
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_below="@id/caller_name"
+        android:layout_marginStart="10dp"/>
+
+    <Button
+        android:id="@+id/accept_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Accept"
+        android:backgroundTint="#128c7e"
+        android:layout_below="@id/call_type"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/decline_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="60dp"
+        android:layout_toEndOf="@id/accept_btn"
+        android:layout_below="@id/call_type"
+        android:backgroundTint="#FF0000"
+        android:text="Decline"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+</RelativeLayout>

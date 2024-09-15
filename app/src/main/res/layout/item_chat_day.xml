@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <TextView
+        android:id="@+id/tv_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="apr 22,2024"
+        android:textColor="#808080"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/item_chat_date_bgnd"
+        />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/tv_day"
+
+        />
+
+
+</RelativeLayout>

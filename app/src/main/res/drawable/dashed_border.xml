@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background for the dashed border -->
+    <item android:drawable="@android:color/transparent" />
+
+    <!-- Dashed border with rounded corners -->
+    <item
+        android:left="-2dp"
+        android:right="-2dp"
+        android:top="-2dp"
+        android:bottom="-2dp">
+        <shape
+            android:shape="oval">
+            <corners android:radius="16dp" /> <!-- Adjust the radius based on your ImageView's corner radius -->
+            <stroke
+                android:width="3dp"
+                android:color="#128c7e"
+                android:dashWidth="8dp"
+                android:dashGap="8dp" />
+        </shape>
+    </item>
+
+</layer-list>
+

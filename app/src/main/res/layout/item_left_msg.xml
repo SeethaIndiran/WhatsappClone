@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cl_main_left"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="9dp"
+    android:padding="6dp"
+    android:layout_gravity="start"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_chat_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="@drawable/item_msg_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="12dp">
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:textStyle="bold"
+            android:textSize="@dimen/_13ssp"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/_5sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="8dp"/>
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time"
+            android:textStyle="bold"
+            android:textSize="@dimen/_10ssp"
+            android:textColor="#808080"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintStart_toEndOf="@id/tv_name"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="@dimen/_3sdp"/>
+
+        <ImageView
+            android:id="@+id/tick"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/check"
+            android:contentDescription="@string/image"
+            android:layout_marginStart="@dimen/_5sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_time"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+     app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/chat_image"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:src="@mipmap/ic_launcher"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/image"
+            app:layout_constraintStart_toEndOf="@id/image_forward"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="10dp"
+            android:layout_marginStart="10dp"/>
+
+        <ImageView
+            android:id="@+id/image_forward"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_forward_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias=".5"
+
+            android:contentDescription="@string/image"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone">
+
+        <VideoView
+            android:id="@+id/chat_video"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:src="@mipmap/ic_launcher"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/image"
+            app:layout_constraintStart_toEndOf="@id/image_forward_video"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="10dp"
+            android:layout_marginStart="10dp"/>
+
+        <ImageView
+            android:id="@+id/image_forward_video"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_forward_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias=".5"
+            android:contentDescription="@string/image"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_audio"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent=".7"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_msg_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/chat_roundedImageView"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/rounded_image_bgnd"
+            app:riv_oval="true"
+            android:scaleType="centerCrop"/>
+        <ImageView
+            android:id="@+id/chat_audio"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/baseline_mic_24"
+            android:contentDescription="@string/image"
+            android:scaleType="fitXY"
+            android:layout_marginStart="25dp"
+            app:layout_constraintStart_toStartOf="@id/chat_roundedImageView"
+            app:layout_constraintBottom_toBottomOf="@id/chat_roundedImageView"/>
+
+        <ImageButton
+            android:id="@+id/chat_play_btn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/round_play_arrow_24"
+            app:layout_constraintStart_toEndOf="@id/chat_roundedImageView"
+            android:background="#a6fac7"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <SeekBar
+            android:id="@+id/chat_seekbar"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".55"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toEndOf="@id/chat_play_btn"
+            app:layout_constraintTop_toTopOf="@id/chat_play_btn"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

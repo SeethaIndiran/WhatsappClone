@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/video_call"
+        android:title="Video Call"
+        android:icon = "@drawable/voice_call"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/voice_call"
+        android:title="Voice Call"
+        android:icon = "@drawable/baseline_videocam_24"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"
+        android:icon = "@drawable/ic_baseline_more_vert_24"
+        app:showAsAction="ifRoom" />
+
+</menu>

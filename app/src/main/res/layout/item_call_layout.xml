@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cl_chat"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="7dp"
+    android:paddingBottom="7dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/iv_round"
+        android:layout_width="@dimen/_42sdp"
+        android:layout_height="@dimen/_42sdp"
+        android:scaleType="fitXY"
+        android:src="@drawable/baseline_person_24"
+        app:riv_oval="true"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/rounded_image_bgnd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textStyle="bold"
+        android:textSize="@dimen/_11ssp"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_14sdp"
+        app:layout_constraintStart_toEndOf="@id/iv_round"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/_10sdp"/>
+
+    <ImageView
+        android:id="@+id/iv_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_outward_24"
+        android:background="@color/white"
+        android:contentDescription="@string/image"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintStart_toEndOf="@id/iv_round"
+        app:layout_constraintTop_toBottomOf="@id/tv_name"
+        />
+
+    <TextView
+        android:id="@+id/tv_call_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textStyle="bold"
+        android:textSize="@dimen/_11ssp"
+        android:textColor="@color/black"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintStart_toEndOf="@id/iv_arrow"
+        app:layout_constraintTop_toBottomOf="@id/tv_name"
+        />
+
+    <ImageButton
+        android:id="@+id/call_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_videocam"
+        android:background="@color/white"
+        android:contentDescription="@string/image"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
