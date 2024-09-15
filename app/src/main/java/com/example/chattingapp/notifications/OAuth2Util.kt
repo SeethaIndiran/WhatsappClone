@@ -8,6 +8,9 @@ import com.google.auth.oauth2.GoogleCredentials
 import java.io.InputStream
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.example.chattingapp.BuildConfig
+import java.io.ByteArrayInputStream
+import java.nio.charset.Charset
 import java.util.Date
 
 object OAuth2Util {
@@ -22,9 +25,16 @@ object OAuth2Util {
         return credentials.accessToken.tokenValue
     }*/
     fun getAccessToken(context: Context): String? {
-        return try {
+
+            return try {
             generateJWT()
-            val inputStream: InputStream = context.resources.openRawResource(R.raw.service_key_new)
+                val jsonString = BuildConfig.JSON_DATA
+
+                // Convert the JSON string to an InputStream
+                val inputStream: InputStream = ByteArrayInputStream(jsonString.toByteArray(Charset.forName("UTF-8")))
+
+          //  val inputStream: InputStream = context.resources.openRawResource(R.raw.service_key_new)
+
             val credentials = GoogleCredentials.fromStream(inputStream)
                 .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
              credentials.refresh()
