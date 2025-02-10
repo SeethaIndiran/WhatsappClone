@@ -161,7 +161,7 @@ class CallsActivity : AppCompatActivity(), MainService.EndCallListener{
                     }
                      binding.endCallButton.setOnClickListener {
                          serviceRepository.sendEndCall()
-                           serviceRepository.stopService()
+
 
                      }
 
@@ -435,16 +435,7 @@ class CallsActivity : AppCompatActivity(), MainService.EndCallListener{
             apply()
         }
     }
-    override fun onPause() {
-        super.onPause()
-        // Notify the service to show the overlay
-    //    saveCallInfo(isVideoCall!!,isCaller!!,target!!)
-        if(isCallActive){
-         //   serviceRepository.showOverlay()
-        }
 
-
-    }
 
 
 

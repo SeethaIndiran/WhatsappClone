@@ -171,7 +171,7 @@
             app:riv_oval="true"
             android:scaleType="centerCrop"/>
         <ImageView
-            android:id="@+id/chat_audio"
+            android:id="@+id/chat_audio_image"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/baseline_mic_24"

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/whatsAppWelcomeFragment"
+    app:startDestination="@id/signInFragment"
 
     tools:ignore="MissingDefaultResource">
 
@@ -182,6 +182,11 @@
             app:destination="@id/mainFragment" />
 
     </fragment>
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="com.example.chattingapp.fragments.TestFragment"
+        android:label="fragment_test"
+        tools:layout="@layout/fragment_test" />
 
 
 </navigation>

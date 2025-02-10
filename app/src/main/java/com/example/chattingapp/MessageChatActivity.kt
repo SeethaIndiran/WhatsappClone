@@ -3,17 +3,20 @@ package com.example.chattingapp
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.StrictMode
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
@@ -28,8 +31,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.chattingapp.adapters.ChatsAdapter
-import com.example.chattingapp.adapters.ChatsDayAdapte
+import com.example.chattingapp.adapters.DateMessageAdapter
 import com.example.chattingapp.databinding.ActivityNewMessageBinding
 import com.example.chattingapp.firebasevideocall.service.MainServiceRepository
 import com.example.chattingapp.fragments.ForwardFragment
@@ -42,14 +47,15 @@ import com.example.chattingapp.models.WaveformView
 import com.example.chattingapp.notifications.ApiService
 import com.example.chattingapp.notifications.Client
 import com.example.chattingapp.notifications.DataCall
-import com.example.chattingapp.notifications.DataCalls
 import com.example.chattingapp.notifications.MyResponse
 import com.example.chattingapp.notifications.OAuth2Util
 import com.example.chattingapp.notifications.Sender
 import com.example.chattingapp.notifications.Token
 import com.example.chattingapp.others.Constants.Companion.ACTION_MSG_CHAT_ACTIVITY
 import com.example.chattingapp.others.MediaPlayerManager
+import com.example.chattingapp.utils.AccessToken
 import com.example.chattingapp.utils.FirebaseRepository
+import com.example.chattingapp.utils.GetAccessToken
 import com.example.chattingapp.utils.getCameraAndMicPermission
 import com.example.chattingapp.viewmodels.UserViewmodel
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -83,6 +89,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -92,7 +99,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class MessageChatActivity : AppCompatActivity(),Timer.OnTimerTickListener ,ChatsAdapter.onClickListener{
+class MessageChatActivity : AppCompatActivity(),Timer.OnTimerTickListener ,ChatsAdapter.onClickListener, DateMessageAdapter.OnSelectionChangeListener{
 
 
     private lateinit var binding: ActivityNewMessageBinding
@@ -130,10 +137,11 @@ class MessageChatActivity : AppCompatActivity(),Timer.OnTimerTickListener ,Chats
     private  var runnable: Runnable? = null
     private var delay = 1000L
 
-    private lateinit var chatsDayAdapter: ChatsDayAdapte
+    private var chatsDayAdapter: DateMessageAdapter= DateMessageAdapter(emptyList(),null,this@MessageChatActivity,this,this@MessageChatActivity)
     private lateinit var chatAdapter: ChatsAdapter
     private var chatList = mutableListOf<Chat>()
     private var chatDayList = mutableListOf<ChatDay>()
+    private var selectedListSize  = 0
 
   //  var fragment: Fragment = this
 
@@ -147,6 +155,7 @@ class MessageChatActivity : AppCompatActivity(),Timer.OnTimerTickListener ,Chats
 
     private var firebaseRepository:FirebaseRepository?=null
     private lateinit var mediaPlayerManager: MediaPlayerManager
+    private var accessToken = ""
 
     @Inject
     lateinit var serviceRepository: MainServiceRepository
@@ -169,7 +178,9 @@ class MessageChatActivity : AppCompatActivity(),Timer.OnTimerTickListener ,Chats
         //  seekBar = bottomDialogLayout.findViewById(R.id.seek_bar)
         currentUser = FirebaseAuth.getInstance().currentUser!!.uid
         getUserId()
-        setUpRecyclerView()
+
+
+
         observeViewmodel()
 
       /*  CoroutineScope(Dispatchers.IO).launch {
@@ -514,13 +525,16 @@ binding.chatSettingsBtn.setOnClickListener {
 
 
     fun navigateToForwardfragment(){
+        chatList = chatsDayAdapter.getSelectedChats().toMutableList()
 
+        // Count the total number of selected messages across all ChatDays
+       // val totalSelectedMessages = selectedChats.sumBy { it.chats.size }
 
         val selectedItems = chatList.size
-        val num = selectedList.size
-        if(selectedItems>=1 && num>=1){
+      //  val num = selectedList.size
+        if(selectedItems>=1 ){
             binding.tvNumberOfMsgs.visibility = View.VISIBLE
-            binding.tvNumberOfMsgs.text = selectedItems.toString()
+            binding.tvNumberOfMsgs.text = chatList.size.toString()
             binding.deleteSelect.visibility = View.VISIBLE
             binding.forwardSelect.visibility = View.VISIBLE
             binding.videoCallBtn.visibility = View.GONE
@@ -534,6 +548,7 @@ binding.chatSettingsBtn.setOnClickListener {
             binding.forwardSelect.setOnClickListener {
                 val bundle = Bundle()
                 bundle.apply {
+                    changeBackground(chatList)
                     putSerializable("selectedItems",chatList as Serializable)
                 }
                 val fragment = ForwardFragment()
@@ -543,9 +558,10 @@ binding.chatSettingsBtn.setOnClickListener {
                 transaction.addToBackStack(null)
                     .commit()
 
+
             }
             binding.backBtn.setOnClickListener {
-               changeBackground()
+               chatsDayAdapter.clearSelection(chatList)
 
                 showSeletedView()
             }
@@ -573,7 +589,7 @@ private fun showSeletedView(){
 }
 
      @RequiresApi(Build.VERSION_CODES.O)
-     fun toggleSelection(item:Chat, holder: ViewHolder, position:Int){
+     fun toggleSelection(item:Chat,holder: ViewHolder){
 
 
          if (selectedList.contains(holder) ) {
@@ -593,15 +609,18 @@ private fun showSeletedView(){
 
      }
 
-    private fun changeBackground(){
-        if(selectedList.isNotEmpty()){
+    private fun changeBackground(list:List<Chat>){
+      for(chat in list){
+          chat.isSelected = false
+      }
+       /* if(selectedList.isNotEmpty()){
             for(item in selectedList){
                 item.itemView.setBackgroundColor(Color.parseColor("#00FFFFFF"))
             }
         }
 
   selectedList.clear()
-        chatList.clear()
+        chatList.clear()*/
      }
 
 
@@ -708,6 +727,13 @@ private fun showSeletedView(){
                 userIdVisit = it.userVisit.uid
                 binding.tvToolbarTitle.text = it.userVisit.username
 
+                Glide.with(this@MessageChatActivity)
+                    .load(it.userVisit.profile)
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.ivRound)
+
+
                 userIdVisitName = it.userVisit.username
                 viewmodel.getAllChats(currentUser,userIdVisit)
                 CoroutineScope(Dispatchers.IO).launch {
@@ -716,8 +742,9 @@ private fun showSeletedView(){
                         withContext(Dispatchers.Main) {
                             chatDayList.clear()
                             chatDayList.addAll(it.data!!)
-                            chatsDayAdapter.differ.submitList(chatDayList)
-                            chatsDayAdapter.notifyDataSetChanged()
+                            setUpRecyclerView(chatDayList)
+                          //  chatsDayAdapter.differ.submitList(chatDayList)
+                           // chatsDayAdapter.notifyDataSetChanged()
                         }
                     }
                 }
@@ -729,8 +756,73 @@ private fun showSeletedView(){
             }
         }
     }
+    fun copyFileToInternalStorage(uri: Uri, contentResolver: ContentResolver): Uri? {
+        try {
+            val inputStream = contentResolver.openInputStream(uri) ?: return null
+            val fileName = "image_${System.currentTimeMillis()}.jpg"
+
+            // Create a file in internal storage
+            val file = File(this.filesDir, fileName)
+            val outputStream = FileOutputStream(file)
+
+            // Write the data from InputStream to the OutputStream
+            val buffer = ByteArray(1024)
+            var length: Int
+            while (inputStream.read(buffer).also { length = it } > 0) {
+                outputStream.write(buffer, 0, length)
+            }
+
+            // Close the streams
+            outputStream.close()
+            inputStream.close()
+
+            // Return the Uri of the saved file
+            return Uri.fromFile(file)
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
 
 
+
+    private fun setUpRecyclerViewTest() {
+        val messages = listOf(
+            Chat(FirebaseAuth.getInstance().currentUser!!.uid,"Hello there","",false,"","",0L,0,false),
+            //  Message("Hi there!", MessageType.TEXT, false),
+            // Message("How are you", MessageType.TEXT, true),
+            Chat("","How are you","",false,"","",0L,0,false),
+            Chat(FirebaseAuth.getInstance().currentUser!!.uid,"Hello there","",false,"/storage/emulated/0/Android/data/com.example.chattingapp/cache/audio_record_2024.09.262_06.55.52.mp3",
+                "",0L,0,false),
+
+            Chat("","see you soon","",false,"","",0L,0,false),
+            Chat(FirebaseAuth.getInstance().currentUser!!.uid,"Hello there","",false,"/storage/emulated/0/Android/data/com.example.chattingapp/cache/audio_record_2024.09.262_06.55.52.mp3",
+                "",0L,0,false)
+            //  Message("/storage/emulated/0/Android/data/com.example.chattingapp/cache/audio_record_2024.09.262_06.55.52.mp3", MessageType.AUDIO, true),
+            // Message("good", MessageType.TEXT, false),
+            //  Message("/storage/emulated/0/Android/data/com.example.chattingapp/cache/audio_record_2024.09.262_06.55.52.mp3", MessageType.AUDIO, false),
+            //    Message("See you soon", MessageType.TEXT, false),
+            //   Message("all the bset", MessageType.TEXT, true),
+            //  Message("God bless you", MessageType.TEXT, false),
+            //   Message("https://example.com/image.jpg", MessageType.IMAGE, true)
+        )
+        val msgsTwo = listOf(
+            Chat(FirebaseAuth.getInstance().currentUser!!.uid,"welcome baby","",false,"","",0L,0,false),
+            //  Message("Hi there!", MessageType.TEXT, false),
+            // Message("How are you", MessageType.TEXT, true),
+            Chat("","bye bye bab","",false,"","",0L,0,false),
+            Chat("","Hello there","",false,"/storage/emulated/0/Android/data/com.example.chattingapp/cache/audio_record_2024.09.262_06.55.52.mp3",
+                "",0L,0,false),
+        )
+        val dateMsgList  =listOf( ChatDay(1726617600000,messages),ChatDay(1726704000000,msgsTwo))
+     val  msgAdapter = DateMessageAdapter(dateMsgList,FirebaseAuth.getInstance().currentUser!!,this,this,this@MessageChatActivity)
+        binding.recyclerView.adapter = msgAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this,
+            LinearLayoutManager.VERTICAL,false)
+
+        binding.recyclerView.setHasFixedSize(true)
+    }
 
 
     @SuppressLint("SimpleDateFormat")
@@ -752,6 +844,7 @@ private fun showSeletedView(){
         val intent = intent.extras
        val visitUserUId  = intent!!.get("id")
         viewmodel.retrieveUser(visitUserUId.toString())
+
         observeViewmodel()
        // setVoiceCall(visitUserUId.toString())
       //  setVideoCall(visitUserUId.toString())
@@ -762,7 +855,7 @@ private fun showSeletedView(){
         super.onActivityResult(requestCode, resultCode, data)
 
         if( resultCode == Activity.RESULT_OK ){
-            if(requestCode == GALLERY ){
+            if(requestCode == GALLERY || requestCode == CAMERA ){
                 val fileUri = data!!.data
                 fileUri?.let {
                     val date = dateConversion(System.currentTimeMillis())
@@ -888,8 +981,8 @@ private fun showSeletedView(){
         waveform.addAmplitudes(mediaRecorder!!.maxAmplitude.toFloat())
     }
 
-    private fun setUpRecyclerView(){
-        chatsDayAdapter  = ChatsDayAdapte(this, FirebaseAuth.getInstance().currentUser!!,this)
+    private fun setUpRecyclerView(list:List<ChatDay>){
+        chatsDayAdapter  = DateMessageAdapter(list, FirebaseAuth.getInstance().currentUser!!,this,this,this@MessageChatActivity)
         binding.recyclerView.adapter = chatsDayAdapter
         val lll = LinearLayoutManager(this,
             LinearLayoutManager.VERTICAL,false)
@@ -925,9 +1018,9 @@ private fun showSeletedView(){
         super.onResume()
         //  viewmodel.getAllChats(currentUser,userIdVisit,FirebaseAuth.getInstance().currentUser!!,userIdVisit)
         //  observeViewModelForChats()
-        changeBackground()
-        selectedList.clear()
-        chatList.clear()
+       // changeBackground(emptyList())
+      //  selectedList.clear()
+      //  chatList.clear()
     }
 
     fun navigateToImageVideoFragment(chat: Chat){
@@ -1094,14 +1187,16 @@ private fun showSeletedView(){
                     )
 
                     // Sender object with registration token and data
-                    val accessToken = OAuth2Util.getAccessToken(this)
+
                     val sender = Sender(data, token.getToken()!!.toString())
                     Log.i("token", token.getToken().toString())
 
+                    val tokenAuth = AccessToken.getAccessToken()
+                    val authToken = "Bearer $tokenAuth"
                     // Get OAuth2 token
-
+                 //   accessToken = OAuth2Util.getAccessToken(this).toString()
                     // Make the API call with OAuth token in the header
-                    apiService!!.sendNotification("Bearer $accessToken", sender)
+                    apiService!!.sendNotification(sender,authToken)
                         .enqueue(object : Callback<MyResponse> {
                             override fun onResponse(call: Call<MyResponse>, response: Response<MyResponse>) {
                                 if (response.isSuccessful && response.code() == 200) {
@@ -1199,6 +1294,12 @@ private fun showSeletedView(){
             holder.setBackgroundColor(ContextCompat.getColor(holder.context, R.color.transparentBlue))
         }
 
+    }
+
+    override fun onSelectionChanged(selectedItemCount: Int) {
+
+
+        navigateToForwardfragment()
     }
 
 

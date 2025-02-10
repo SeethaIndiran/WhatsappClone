@@ -81,7 +81,7 @@
                 android:id="@+id/iv_round"
                 android:layout_width="@dimen/_30sdp"
                 android:layout_height="@dimen/_30sdp"
-                android:scaleType="fitXY"
+                android:scaleType="centerCrop"
                 app:riv_oval="true"
                 android:src="@drawable/baseline_person_24"
                 android:layout_marginTop="@dimen/_2sdp"

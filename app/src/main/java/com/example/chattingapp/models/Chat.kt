@@ -14,6 +14,5 @@ data class Chat (
     val clickedNum:Int = 0,
     var isSelected:Boolean = false
 
-):Serializable{
+):Serializable
 
-}

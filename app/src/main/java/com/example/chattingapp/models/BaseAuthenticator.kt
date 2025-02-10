@@ -55,7 +55,7 @@ suspend fun saveCalls(sender:String,receiver:String,senderName:String,receiverNa
 
   suspend fun retrieveChatsLists(id:String):Flow<ScreenState<List<ChatsList>>>
 
-  suspend fun getAllChatUsers(list:List<ChatsList>):Flow<ScreenState<List<Users>>>
+  suspend fun getAllChatUsers(list:List<ChatsList>,searchQuery:String):Flow<ScreenState<List<Users>>>
 
   suspend fun getUnreadMsgs(id:String):Flow<Screen<Int>>
 

@@ -1,0 +1,60 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/receiverMessageContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="7dp"
+    android:padding="8dp"
+    android:layout_gravity="start"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+   >
+
+    <!-- TextView for text messages -->
+    <TextView
+        android:id="@+id/receiverMessageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_msg_left"
+        android:text="Receiver's message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@android:color/black"
+        android:padding="8dp" />
+
+    <!-- ImageView for images, video, etc. -->
+    <ImageView
+        android:id="@+id/receiverMessageImage"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/audioLayoutReceiver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"> <!-- Set visibility to 'gone' by default -->
+
+        <!-- Play/Pause Button -->
+        <ImageButton
+            android:id="@+id/audioPlayPauseButtonReceiver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/round_play_arrow_24"
+            android:contentDescription="Play Audio"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp" />
+
+        <!-- SeekBar for audio progress -->
+        <SeekBar
+            android:id="@+id/audioSeekBarReceiver"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:max="100" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

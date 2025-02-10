@@ -3,11 +3,14 @@ package com.example.chattingapp.fragments
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentResolver
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -19,8 +22,6 @@ import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -44,10 +45,12 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.util.Base64
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
@@ -58,7 +61,9 @@ class ProfileFragment : Fragment() {
    private lateinit var auth:FirebaseAuth
     private  var verificationId:String =""
     private lateinit var dialog: AlertDialog
-    private var encodedeImage:String = ""
+    private lateinit var selectedImageUri: Uri
+    private var encodedeImage = ""
+    private var uriString = ""
     var number=""
     var otp = ""
     var name = ""
@@ -127,7 +132,7 @@ class ProfileFragment : Fragment() {
                 Toast.makeText(requireContext(),"Please enter otp",Toast.LENGTH_SHORT).show()
             }else{
 
-                viewModel.signUpWithPhonenumber(otp,binding.etNum.text.toString(),imageUrl,verificationId)
+                viewModel.signUpWithPhonenumber(otp,binding.etNum.text.toString(),uriString,verificationId)
                 observeViewModel()
             }
 
@@ -156,6 +161,24 @@ class ProfileFragment : Fragment() {
                     transaction.addToBackStack("profileFragment")
                     transaction.commit()
                 }
+            }
+        }
+
+    }
+
+    private fun observeViewModelForProfileImage(){
+
+        lifecycle.coroutineScope.launchWhenCreated {
+            viewModel.url.collectLatest {
+                if(it.isLoading){
+                    dialog.show()
+                }
+                if(it.error.isNotBlank()){
+
+                }
+               it.imageUrl?.let { imageString ->
+                   uriString = imageString
+               }
             }
         }
 
@@ -197,11 +220,12 @@ class ProfileFragment : Fragment() {
 
             if (requestCode == Constants.GALLERY) {
                 data?.let {
-                    val selectedPhotoUri = data.data
-              //   imageUrl =   viewModel.selectProfilePhoto(selectedPhotoUri!!).toString()
+                     selectedImageUri = data.data!!
+                     viewModel.selectProfilePhoto(selectedImageUri)
+                      observeViewModelForProfileImage()
 
                     Glide.with(this)
-                        .load(selectedPhotoUri)
+                        .load(selectedImageUri)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .listener(object : RequestListener<Drawable> {
@@ -225,6 +249,7 @@ class ProfileFragment : Fragment() {
                                 resource?.let {
                                     val bitmap: Bitmap = resource.toBitmap()
                                     encodedeImage = saveImageToInternalStorage(bitmap)
+
                                 }
                                 return false
                             }
@@ -233,7 +258,9 @@ class ProfileFragment : Fragment() {
                         .into(binding.roundedImageView)
 
                 }
-            }}}
+            }
+        }
+    }
     private fun saveImageToInternalStorage(bitmap:Bitmap):String{
         val wrapper = ContextWrapper(requireContext())
 
@@ -250,5 +277,36 @@ class ProfileFragment : Fragment() {
         }
         return file.absolutePath
     }
+
+    fun copyFileToInternalStorage(uri: Uri, contentResolver: ContentResolver): Uri? {
+        try {
+            val inputStream = contentResolver.openInputStream(uri) ?: return null
+            val fileName = "image_${System.currentTimeMillis()}.jpg"
+
+            // Create a file in internal storage
+            val file = File(requireContext().filesDir, fileName)
+            val outputStream = FileOutputStream(file)
+
+            // Write the data from InputStream to the OutputStream
+            val buffer = ByteArray(1024)
+            var length: Int
+            while (inputStream.read(buffer).also { length = it } > 0) {
+                outputStream.write(buffer, 0, length)
+            }
+
+            // Close the streams
+            outputStream.close()
+            inputStream.close()
+
+            // Return the Uri of the saved file
+            return Uri.fromFile(file)
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+
 
 }

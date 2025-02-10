@@ -1,5 +1,7 @@
 package com.example.chattingapp.notifications
 
+import com.example.chattingapp.utils.AccessToken
+import com.example.chattingapp.utils.GetAccessToken
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -15,10 +17,13 @@ interface ApiService {
     fun sendNotification(@Body body: Sender?): Call<MyResponse?>?*/
 
     // FCM v1 API for sending notifications
-    @Headers("Content-Type: application/json")
-    @POST("v1/projects/{chattingapp-39d34}/messages:send")
+
+    @POST("v1/projects/chattingapp-39d34/messages:send")
+    @Headers(
+        "Content-Type: application/json",
+        "Accept: application/json")
     fun sendNotification(
-        @Header("Authorization") authToken: String,  // OAuth token
-        @Body body: Sender
+        @Body body: Sender,
+        @Header("Authorization") authToken: String   // OAuth token
     ): Call<MyResponse>
 }

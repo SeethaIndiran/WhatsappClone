@@ -2,13 +2,14 @@ package com.example.chattingapp.utils;
 
 import android.util.Log;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.common.collect.Lists;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 public class GetAccessToken {
-    private static final String firebaseMessagingScope =
-            "https://www.googleapis.com/auth/firebase.messaging";
+    private  static final String  firebaseMessagingScope = "https://www.googleapis.com/auth/firebase.messaging";
 
     public String getAccessToken() {
         try {
@@ -26,7 +27,7 @@ public class GetAccessToken {
                     "  \"universe_domain\": \"googleapis.com\"\n" +
                     "}";
             InputStream stream = new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8));
-            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(stream).createScoped(firebaseMessagingScope);
+            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(stream).createScoped(Lists.newArrayList(firebaseMessagingScope));
             googleCredentials.refresh();
             return googleCredentials.getAccessToken().getTokenValue();
         } catch (Exception e) {

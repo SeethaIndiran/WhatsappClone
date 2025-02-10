@@ -39,6 +39,9 @@ import kotlinx.coroutines.tasks.await
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth ):BaseAuthenticator {
 
@@ -127,7 +130,7 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
     override suspend fun signUnWithPhonenumber(
         number: String,
         name: String,
-        imageUrl: String,verificationId:String
+        image: String, verificationId:String
     ): Flow<Resource<FirebaseUser>> = flow {
         emit(Resource.Loading())
         try {
@@ -141,7 +144,7 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
                         userHashMap["uid"] = firebaseUserId
                         userHashMap["username"] = name
                         userHashMap["number"] = number
-                        userHashMap["profile"] = imageUrl
+                        userHashMap["profile"] = image
                         userHashMap["status"] = "offline"
                         userHashMap["cover"] = ""
                         userHashMap["search"] = name.toLowerCase(Locale.ROOT)
@@ -167,7 +170,7 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
 
     }
 
-    override suspend fun selectProfilePhoto(imageUri: Uri): Flow<Resource<String>> = flow {
+    override suspend fun selectProfilePhoto(imageUri: Uri): Flow<Resource<String>> = flow  {
 
         try {
             emit(Resource.Loading(null))
@@ -180,21 +183,54 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
             val uploadTask: StorageTask<*>
             uploadTask = filePath.putFile(imageUri)
 
-            val downloadUrl = uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
+            val downloadUrl = suspendCoroutine<String> { continuation ->
+                uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
+                    }
+                    return@Continuation filePath.downloadUrl
+                }).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val url = task.result.toString()
+
+                        continuation.resume(url)
+                    } else {
+                        task.exception?.let { exception ->
+                            continuation.resumeWithException(exception)
+                        }
                     }
                 }
-                return@Continuation filePath.downloadUrl
-            }).await() // This will await the result of the task
+            }
 
-            val url = downloadUrl.toString()
-            emit(Resource.Success(url))
+            emit(Resource.Success(downloadUrl))
+
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "Unknown error occurred"))
         }
 
+      /*  try {
+            emit(Resource.Loading(null))
+
+            val storageReference = FirebaseStorage.getInstance().reference
+                .child("Profile Images")
+            val messageKey = db.collection("ProfileImages").document().id
+            val filePath = storageReference.child("$messageKey.jpg")
+
+            // Upload the file and await completion
+          //  val uploadTaskSnapshot = filePath.putFile(imageUri).await()
+
+            // Get the download URL once the upload is successful
+            val downloadUrl = filePath.downloadUrl.await().toString()
+
+            // Emit success with the download URL
+            emit(Resource.Success(downloadUrl))
+
+        } catch (e: Exception) {
+            // Emit an error with a localized message
+            emit(Resource.Error(e.localizedMessage ?: "Unknown error occurred"))
+        }*/
 
     }
 
@@ -282,7 +318,9 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
                   msgHashMap["clickedNum"] = 0
 
 
-                  val chat:Chat = Chat(senderId,message, userIdVisit,false,"",messageKey,System.currentTimeMillis(),0)
+
+                  val chat:Chat = Chat(senderId,message, userIdVisit,false,"",messageKey,System.currentTimeMillis(),0,false)
+
                   val hashMap = HashMap<String,Any>()
 
                   chatLList.add(chat)
@@ -348,7 +386,7 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
 
             for(msg in listChats){
                 val messageKey = db.collection("ChatsDates").document().id
-                val chat:Chat = Chat(msg.sender,msg.message, msg.receiver,msg.isSeen,msg.url,messageKey,msg.time,msg.clickedNum)
+                val chat:Chat = Chat(msg.sender,msg.message, msg.receiver,msg.isSeen,msg.url,messageKey,System.currentTimeMillis(),msg.clickedNum,msg.isSelected)
                  chatLList.add(chat)
             }
 
@@ -542,7 +580,7 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
                     url,
                     messageKey,
                     System.currentTimeMillis(),
-                    0
+                    0,false
                 )
                 val hashMap = HashMap<String, Any>()
 
@@ -694,7 +732,7 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
             audioFile,
             audioId,
             System.currentTimeMillis(),
-            0
+            0,false
         )
         val hashMap = HashMap<String, Any>()
 
@@ -781,7 +819,7 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
                     url,
                     messageKey,
                     System.currentTimeMillis(),
-                    0
+                    0,false
                 )
                 val hashMap = HashMap<String, Any>()
 
@@ -1164,14 +1202,21 @@ class BaseAuthenticatorImpl @Inject constructor(private val mAuth:FirebaseAuth )
             }
         }
 
-    override suspend fun getAllChatUsers(chatUsers: List<ChatsList>): Flow<ScreenState<List<Users>>> =
+    override suspend fun getAllChatUsers(chatUsers: List<ChatsList>,searchQuery:String): Flow<ScreenState<List<Users>>> =
         callbackFlow {
 
 
             try {
 
                 trySend(ScreenState.Loading(null))
-                val query = db.collection("Users")
+                val query = if (searchQuery.isNotEmpty()) {
+                    db.collection("Users")
+                        .orderBy("search") // Replace "name" with the actual field you want to search by
+                        .startAt(searchQuery)
+                        .endAt(searchQuery + "\uf8ff")
+                } else {
+                    db.collection("Users")
+                }
                 val listener = query.addSnapshotListener { snapshot, exception ->
                     if (exception != null) {
                         trySend(

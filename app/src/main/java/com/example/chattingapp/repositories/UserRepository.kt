@@ -65,7 +65,7 @@ interface UserRepository {
 
     suspend fun retrieveAllChatsList(id:String):Flow<ScreenState<List<ChatsList>>>
 
-    suspend fun retrieveAllChatUsers(list:List<ChatsList>):Flow<ScreenState<List<Users>>>
+    suspend fun retrieveAllChatUsers(list:List<ChatsList>,searchQuery:String):Flow<ScreenState<List<Users>>>
 
     suspend fun getUnreadMsgs(id:String):Flow<Screen<Int>>
 

@@ -4,7 +4,7 @@ class Token {
 
     private  var token:String = ""
 
-
+    constructor()
 
     constructor(token:String){
         this.token = token

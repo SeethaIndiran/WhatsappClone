@@ -127,7 +127,7 @@ class UserViewmodel @Inject constructor(private val repository: UserRepository,
 
       }
 
-    fun signUpWithPhonenumber(number:String,name:String,image:String,verificationId:String){
+    fun signUpWithPhonenumber(number:String, name:String, image: String, verificationId:String){
         viewModelScope.launch {
             repository.signUnWithPhonenumber(number, name, image, verificationId).onEach {
                 when(it){
@@ -393,9 +393,9 @@ class UserViewmodel @Inject constructor(private val repository: UserRepository,
         }
     }
 
-    fun getAllChatUsers(list:List<ChatsList>){
+    fun getAllChatUsers(list:List<ChatsList>,searchQuery:String){
         viewModelScope.launch {
-            repository.retrieveAllChatUsers(list).collectLatest {
+            repository.retrieveAllChatUsers(list,searchQuery).collectLatest {
                 when(it){
                     is ScreenState.Loading ->{
 

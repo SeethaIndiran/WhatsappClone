@@ -162,8 +162,11 @@ import javax.inject.Inject
          return authenticator.retrieveChatsLists(id)
      }
 
-     override suspend fun retrieveAllChatUsers(list: List<ChatsList>): Flow<ScreenState<List<Users>>> {
-         return authenticator.getAllChatUsers(list)
+     override suspend fun retrieveAllChatUsers(
+         list: List<ChatsList>,
+         searchQuery: String
+     ): Flow<ScreenState<List<Users>>> {
+         return authenticator.getAllChatUsers(list,searchQuery)
      }
 
      override suspend fun getUnreadMsgs(id: String): Flow<Screen<Int>> {

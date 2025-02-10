@@ -27,13 +27,13 @@ object OAuth2Util {
     fun getAccessToken(context: Context): String? {
 
             return try {
-            generateJWT()
+          //  generateJWT()
                 val jsonString = BuildConfig.JSON_DATA
 
                 // Convert the JSON string to an InputStream
                 val inputStream: InputStream = ByteArrayInputStream(jsonString.toByteArray(Charset.forName("UTF-8")))
 
-          //  val inputStream: InputStream = context.resources.openRawResource(R.raw.service_key_new)
+          //  val inputStream: InputStream = context.resources.openRawResource(R.raw.ser)
 
             val credentials = GoogleCredentials.fromStream(inputStream)
                 .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))

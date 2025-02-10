@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -89,22 +91,45 @@ class ChatsFragment : Fragment() {
         firebaseUser = FirebaseAuth.getInstance().currentUser
         userChatsList = ArrayList()
 
-     //   setUpRecyclerView()
+
 
         viewmodel.getAllChatsList(firebaseUser!!.uid)
         CoroutineScope(Dispatchers.IO).launch {
             viewmodel.chatsList.collectLatest {
                 withContext(Dispatchers.Main){
                     if(!it.data.isNullOrEmpty()){
+                            userChatsList = it.data as MutableList<ChatsList>
 
-                        getAllChatsUsers(it.data)
-                      //  chatsFragmentAdapter.notifyDataSetChanged()
-                    }else{
+                            getAllChatsUsers(userChatsList,"")
 
-                    }
+                            binding.searchName.addTextChangedListener(object: TextWatcher {
+                                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                                }
+
+                                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                                    getAllChatsUsers(it.data,s.toString().trim())
+
+
+                                }
+
+                                override fun afterTextChanged(s: Editable?) {
+
+                                }
+
+                            })
+
+
+
+
+                         }
                 }
             }
         }
+
+
+
+
 
     }
     private fun updateToken(refreshToken: String) {
@@ -116,53 +141,15 @@ class ChatsFragment : Fragment() {
 
 
 
-    fun convertMillisToTime(millis: Long): String {
-        // Create a SimpleDateFormat with the desired time format
-        val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-
-        // Create a Date object using the provided milliseconds
-        val date = Date(millis)
-
-        val currentTimeInMillis = System.currentTimeMillis()
-        val time2 =  dateFormat.format(date)
-        if (isSameTime(currentTimeInMillis, millis)) {
-            return "Just now"
-        }else{
-            return time2
-        }
-    }
-
-    private fun isSameTime(time1: Long, time2: Long): Boolean {
-        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        return dateFormat.format(Date(time1)) == dateFormat.format(Date(time2))
-    }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun timeDay(time:Long):String {
-        val yourTimeInMillis: Long = System.currentTimeMillis()
 
-        // Convert the Long value to LocalDateTime
-        val yourDateTime = Instant.ofEpochMilli(time)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime()
 
-        // Get the current date and time
-        val currentDateTime = LocalDateTime.now()
 
-        // Compare dates to determine if it's today, yesterday, or earlier
-        val daysBetween = ChronoUnit.DAYS.between(yourDateTime.toLocalDate(), currentDateTime.toLocalDate())
 
-        val result =   when {
-            daysBetween == 0L -> convertMillisToTime(time)
-            daysBetween == 1L -> "Yesterday"
-            else -> "Other day"
-        }
-        return result
-    }
 
-    private fun getAllChatsUsers(list:List<ChatsList>){
-        viewmodel.getAllChatUsers(list)
+    private fun getAllChatsUsers(list:List<ChatsList>,query:String){
+        viewmodel.getAllChatUsers(list,query)
         CoroutineScope(Dispatchers.IO).launch {
             viewmodel.users.collectLatest {
                 withContext(Dispatchers.Main){
@@ -175,6 +162,9 @@ class ChatsFragment : Fragment() {
             }
         }
     }
+
+
+
     private fun getLastChats(id:String,list:List<Users>){
         viewmodel.retrieveLastMessage(id,list)
         CoroutineScope(Dispatchers.IO).launch {

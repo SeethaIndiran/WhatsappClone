@@ -180,7 +180,7 @@ class ChatsAdapter( private val context:Context, private val fireUser:FirebaseUs
 
             } else {
                 //image left
-                itemBindingLeft?.clAudio?.visibility = View.GONE
+            /*    itemBindingLeft?.clAudio?.visibility = View.GONE
                 itemBindingLeft?.clVideo?.visibility = View.GONE
                 itemBindingLeft?.clChatText?.visibility = View.GONE
                 itemBindingLeft?.clImage?.visibility = View.VISIBLE
@@ -193,7 +193,7 @@ class ChatsAdapter( private val context:Context, private val fireUser:FirebaseUs
                     if (fragment is MessageChatActivity) {
                         fragment.navigateToImageVideoFragment(chat)
                     }
-                }
+                }*/
 
             }
 
@@ -213,12 +213,12 @@ class ChatsAdapter( private val context:Context, private val fireUser:FirebaseUs
                     }
                 }
             } else {
-                itemBindingLeft?.clAudio?.visibility = View.GONE
+              /*  itemBindingLeft?.clAudio?.visibility = View.GONE
                 itemBindingLeft?.clVideo?.visibility = View.VISIBLE
                 itemBindingLeft?.clChatText?.visibility = View.GONE
                 itemBindingLeft?.clImage?.visibility = View.GONE
                 itemBindingLeft?.chatVideo?.setVideoURI(chat.url.toUri())
-                itemBindingLeft?.chatVideo?.start()
+                itemBindingLeft?.chatVideo?.start()*/
             }
 
 
@@ -416,7 +416,7 @@ class ChatsAdapter( private val context:Context, private val fireUser:FirebaseUs
                 }
 
             } else {
-                itemBindingLeft?.clAudio?.visibility = View.GONE
+              /*  itemBindingLeft?.clAudio?.visibility = View.GONE
                 itemBindingLeft?.clVideo?.visibility = View.GONE
                 itemBindingLeft?.clChatText?.visibility = View.VISIBLE
                 itemBindingLeft?.clImage?.visibility = View.GONE
@@ -424,7 +424,7 @@ class ChatsAdapter( private val context:Context, private val fireUser:FirebaseUs
                 itemBindingLeft?.tvName?.text = chat.message
                 itemBindingLeft?.tvTime?.text = dateConversion(chat.time)
 
-
+*/
 
 
             }
@@ -434,15 +434,15 @@ class ChatsAdapter( private val context:Context, private val fireUser:FirebaseUs
 
    itemBindingRight?.clMain?.setOnClickListener {
        if(fragment is MessageChatActivity){
-           fragment.toggleSelection(chat,holder,position)
-           fragment.navigateToForwardfragment()
+           fragment.toggleSelection(chat,holder)
+        //   fragment.navigateToForwardfragment()
            //  notifyDataSetChanged()
        }
    }
               itemBindingLeft?.clMainLeft?.setOnClickListener {
                   if(fragment is MessageChatActivity){
-                      fragment.toggleSelection(chat,holder,position)
-                      fragment.navigateToForwardfragment()
+                      fragment.toggleSelection(chat,holder)
+                 //     fragment.navigateToForwardfragment()
                       //  notifyDataSetChanged()
                   }
               }

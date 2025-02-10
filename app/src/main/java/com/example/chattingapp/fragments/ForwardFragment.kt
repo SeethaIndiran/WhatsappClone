@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -67,6 +68,14 @@ class ForwardFragment : Fragment() {
 
 
          selectedChats = arguments!!.getSerializable("selectedItems") as MutableList<Chat>
+
+        val fileUriString = arguments?.getString("image_data")
+        val fileUri = fileUriString?.let { Uri.parse(it) } // Convert back to Uri if not null
+
+        fileUri?.let {
+
+        }
+
         binding.backBtn.setOnClickListener {
 //            chatsAdapter!!.list.clear()
             activity!!.onBackPressed()
@@ -126,20 +135,22 @@ class ForwardFragment : Fragment() {
             val namesString  = namesList.joinToString { "," }
             binding.clForward.visibility = View.VISIBLE
             binding.tvForward.text = namesString
+
             binding.forwardBtnBottom.setOnClickListener {
 
-                    for (userIndex in usersList.indices) {
+                for (userIndex in usersList.indices) {
                         val user = usersList[userIndex]
+
                         for (chatIndex in selectedChats.indices) {
                             val chat = selectedChats[chatIndex]
 
-                              val newChat = Chat(frUser,chat.message,user.uid,chat.isSeen,chat.url,chat.messageKey,chat.time,chat.clickedNum)
+                              val newChat = Chat(frUser,chat.message,user.uid,chat.isSeen,chat.url,chat.messageKey,chat.time,chat.clickedNum,chat.isSelected)
                             newChatsLit.add(newChat)
-
+                             // viewmodel.sendMessage(frUser,user.uid,chat.message,dateConversion(System.currentTimeMillis()),chat.url)
                         }
                         viewmodel.sendMultipleChats(dateConversion(System.currentTimeMillis()),newChatsLit)
-
                     }
+
 
 
 
@@ -151,9 +162,9 @@ class ForwardFragment : Fragment() {
                 val intent = Intent(requireContext(), MessageChatActivity::class.java).apply {
                     putExtras(bundle)
                 }
-                if(activity is MessageChatActivity){
+                /*if(activity is MessageChatActivity){
                     activity.observeViewmodel()
-                }
+                }*/
                 startActivity(intent)
             }
           //  (activity as? MainActivity)?.

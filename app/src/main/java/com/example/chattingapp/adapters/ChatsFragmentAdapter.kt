@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.chattingapp.R
 import com.example.chattingapp.databinding.ItemChatBinding
 import com.example.chattingapp.fragments.ChatsFragment
@@ -26,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -79,8 +82,8 @@ class ChatsFragmentAdapter(private val fragment: Fragment, private var isLastChe
         holder.itemView.apply {
             itemChatBinding?.tvName?.text = user.username
 
-          //  Glide.with(this).load(la.profile).diskCacheStrategy(DiskCacheStrategy.ALL).into(itemChatBinding?.ivRound!!)
-            itemChatBinding?.tvLastMsg?.visibility = View.VISIBLE
+          //  Glide.with(this).load(File(user.profile)).diskCacheStrategy(DiskCacheStrategy.ALL).into(itemChatBinding?.ivRound!!)
+        //    itemChatBinding?.tvLastMsg?.visibility = View.VISIBLE
            // retrieveLastMsg(user.uid,itemChatBinding!!.tvLastMsg,itemChatBinding!!.tvDate)
               getLastMsg(user.uid,itemChatBinding!!.tvLastMsg,itemChatBinding?.tick!!,itemChatBinding?.tvDate!!)
           //  retrieveLastChat(user.uid,itemChatBinding!!.tvLastMsg,position)
@@ -215,7 +218,7 @@ private fun dateConversion(time: Long): String {
         val result =   when {
             daysBetween == 0L -> convertMillisToTime(time)
             daysBetween == 1L -> "Yesterday"
-            else -> "Other day"
+            else -> dateConversion(time)
         }
         return result
     }

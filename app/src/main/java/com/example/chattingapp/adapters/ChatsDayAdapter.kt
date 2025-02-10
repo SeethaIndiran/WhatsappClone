@@ -39,7 +39,7 @@ class ChatsDayAdapte(
 
     private val differCallBack = object: DiffUtil.ItemCallback<ChatDay>(){
         override fun areItemsTheSame(oldItem: ChatDay, newItem: ChatDay): Boolean {
-            return oldItem.date == newItem.date
+            return oldItem.chatDay == newItem.chatDay
         }
 
 
@@ -69,7 +69,7 @@ class ChatsDayAdapte(
      val chatDay = differ.currentList[position]
 
         holder.itemView.apply {
-            binding!!.tvDay.text = dateConversion(chatDay.date)
+            binding!!.tvDay.text = dateConversion(chatDay.chatDay)
             binding?.tvDay?.background = ContextCompat.getDrawable(context,R.drawable.item_chat_date_bgnd)
 
             binding!!.rvChats.adapter = chatsAdapter

@@ -181,8 +181,7 @@ class MainService:Service(), FirebaseRepository.Listener {
     private fun endCallAndRestartRepository(){
         mainRepository.endCall()
         endCallListener?.onCallEnded()
-        stopTimer()
-        handleStopService()
+       handleStopService()
        mainRepository.initWebrtcClient(userName!!)
 
     }
