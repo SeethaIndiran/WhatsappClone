@@ -24,7 +24,7 @@ object OAuth2Util {
         credentials.refreshIfExpired()
         return credentials.accessToken.tokenValue
     }*/
-    fun getAccessToken(context: Context): String? {
+   /* fun getAccessToken(context: Context): String? {
 
             return try {
           //  generateJWT()
@@ -45,7 +45,7 @@ object OAuth2Util {
             null
         }
     }
-
+*/
 
     fun generateJWT(): String {
         val currentTimeInMillis = System.currentTimeMillis()

@@ -27,12 +27,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        // Load properties from local.properties
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
-// Add the JSON object as a string in buildConfigField
-        buildConfigField "String", "JSON_DATA", "\"${properties.getProperty('JSON_DATA').replace('"', '\\"')}\""
+        buildConfigField "String", "FIREBASE_SERVICE_ACCOUNT", "\"${properties.getProperty("FIREBASE_SERVICE_ACCOUNT")}\""
+
 
     }
 
