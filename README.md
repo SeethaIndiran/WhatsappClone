@@ -59,35 +59,44 @@
    * Auto-delete messages after a set time
 
 ## 🏗 Tech Stack
-### 📌 Frontend & UI
-    * Kotlin (Primary language)
-    * XML-based UI
-    * ViewModel, LiveData, MutableStateFlow
-    * ConstraintLayout & Material Design
+ ### 📌 Frontend & UI
+        * Kotlin (Primary language)
+        * Jetpack Compose & XML-based UI
+        * ViewModel, LiveData, MutableStateFlow
+        * ConstraintLayout & Material Design
 
-### 📌 Backend & Database
-    *  Firebase Firestore (Real-time database)
-    * Firebase Authentication (User login & sign-up)
-    * Firebase Storage (For media file uploads)
-    * Firebase Cloud Messaging (FCM) (Push notifications)
+ ### 📌 Backend & Database
+        * Firebase Firestore (Real-time database)
+        * Firebase Authentication (User login & sign-up)
+        * Firebase Storage (For media file uploads)
+        * Firebase Cloud Messaging (FCM) (Push notifications)
 
-### 📌 Networking & APIs
-    * Retrofit (For network requests)
-    * WebRTC (For real-time audio/video calls)
-    * Glide (For image loading)
+ ### 📌 Networking & APIs
+       * Retrofit (For network requests)
+       * WebRTC (For real-time audio/video calls)
+       * Glide (For image loading)
 
 ### 📌 Dependency Injection & Architecture
-    * MVVM Architecture (Clean & scalable)
-    * Dagger Hilt (Dependency Injection)
+       * MVVM Architecture (Clean & scalable)
+       * Dagger Hilt (Dependency Injection)
 
 ### 📌 Other Libraries & Tools
-    * Lottie Animations (For smooth UI animations)
-    * ExoPlayer (For video playback)
-    * Coroutine & Flow (For asynchronous programming)
-    * Room Database (For local chat history storage)
-    * Encryption (End-to-end encryption for chat security)
+       * Lottie Animations (For smooth UI animations)
+       * Coroutine & Flow (For asynchronous programming)
 
 ## 🔧 Prerequisites
+       * Android Studio Giraffe or newer
+       * Firebase Project Set Up (Firestore, Authentication, Storage, FCM)
+       * WebRTC signaling server (for audio/video calls)
+
+## 📥 Installation
+       1. Clone this repository
+           git clone https://github.com/yourusername/whatsapp-clone.git
+           cd whatsapp-clone
+       2. Open the project in Android Studio
+       3. Connect your Firebase project
+       4. Run the app on an emulator or physical device
+       
     
     
     
