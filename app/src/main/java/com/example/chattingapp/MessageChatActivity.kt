@@ -41,15 +41,18 @@ import com.example.chattingapp.fragments.ForwardFragment
 import com.example.chattingapp.fragments.ImageVideoFragment
 import com.example.chattingapp.models.Chat
 import com.example.chattingapp.models.ChatDay
+import com.example.chattingapp.models.Message
 import com.example.chattingapp.models.Timer
 import com.example.chattingapp.models.Users
 import com.example.chattingapp.models.WaveformView
 import com.example.chattingapp.notifications.ApiService
 import com.example.chattingapp.notifications.Client
 import com.example.chattingapp.notifications.DataCall
+import com.example.chattingapp.notifications.MessageTest
 import com.example.chattingapp.notifications.MyResponse
 import com.example.chattingapp.notifications.OAuth2Util
 import com.example.chattingapp.notifications.Sender
+import com.example.chattingapp.notifications.SenderTest
 import com.example.chattingapp.notifications.Token
 import com.example.chattingapp.others.Constants.Companion.ACTION_MSG_CHAT_ACTIVITY
 import com.example.chattingapp.others.MediaPlayerManager
@@ -62,6 +65,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -85,6 +89,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -1172,8 +1177,8 @@ private fun showSeletedView(){
                 // This is the device's FCM registration token
                 val token = document.toObject(Token::class.java)
 
-                if (token != null) {
-                    val data = DataCall(
+              if (token != null) {
+                  /*  val data = DataCall(
                         user = currentUser,
                         icon = R.mipmap.ic_launcher,
                         body = senderName,
@@ -1188,7 +1193,25 @@ private fun showSeletedView(){
 
                     // Sender object with registration token and data
 
-                    val sender = Sender(data, token.getToken()!!.toString())
+                 //   val sender = Sender(data, token.getToken()!!.toString())
+                  Log.i("Debug", "Preparing to send notification.")
+                  val message = MessageTest(
+                      token = token.getToken().toString(),
+                      data = DataCall(
+                          user = currentUser,
+                          icon = R.mipmap.ic_launcher,
+                          body = senderName,
+                          title = when (callType) {
+                              "start_video_call" -> "Incoming video call.."
+                              "start_audio_call" -> "Incoming voice call.."
+                              else -> "Incoming call.."
+                          },
+                          target = userIdVisit,
+                          type = callType
+                      )
+                  )
+
+                  val sender = SenderTest(message)
                     Log.i("token", token.getToken().toString())
 
                     val tokenAuth = AccessToken.getAccessToken()
@@ -1196,12 +1219,56 @@ private fun showSeletedView(){
                     // Get OAuth2 token
                  //   accessToken = OAuth2Util.getAccessToken(this).toString()
                     // Make the API call with OAuth token in the header
-                    apiService!!.sendNotification(sender,authToken)
+                  val gson = Gson()
+                  val jsonPayload = gson.toJson(sender)
+                  Log.i("FCM Payload", jsonPayload)*/
+
+                  val messageJson = JSONObject()
+                  val messageBodyJson = JSONObject()
+                  val dataJson = JSONObject()
+
+                  dataJson.put("user", currentUser.toString())
+                  dataJson.put("icon", "ic_launcher") // Consider sending a string URL instead of resource ID
+                  dataJson.put("body", senderName)
+                  dataJson.put("title", when (callType) {
+                      "start_video_call" -> "Incoming video call.."
+                      "start_audio_call" -> "Incoming voice call.."
+                      else -> "Incoming call.."
+                  })
+
+                  val fcmToken = token.getToken()?.toString()
+                  if (fcmToken.isNullOrEmpty()) {
+                      Log.e("FCM", "Token is null or empty, cannot send notification")
+                          //  return
+                  }
+
+
+                  dataJson.put("target", userIdVisit)
+                  dataJson.put("type", callType)
+
+                  messageBodyJson.put("token", fcmToken) // Key change: "token" for device token
+                  messageBodyJson.put("data", dataJson) // Embed data within "data"
+
+// Optional: Add notification payload if needed
+// val notificationJson = JSONObject()
+// notificationJson.put("title", "Notification Title") // Example
+// notificationJson.put("body", "Notification Body") // Example
+// messageBodyJson.put("notification", notificationJson)
+
+                  val tokenAuth = AccessToken.getAccessToken()
+                  val authToken = "Bearer $tokenAuth"
+                  messageJson.put("message", messageBodyJson) // Wrap in "message"
+
+
+                  val requestBody = messageJson.toString() // This is the JSON string you need to send
+
+                  Log.d("FCM JSON", requestBody) // Important for debugging!
+                    apiService!!.sendNotification(requestBody,authToken)
                         .enqueue(object : Callback<MyResponse> {
                             override fun onResponse(call: Call<MyResponse>, response: Response<MyResponse>) {
                                 if (response.isSuccessful && response.code() == 200) {
                                     val intent = Intent(this@MessageChatActivity, CallsActivity::class.java)
-                                    intent.putExtra("data_model", data)
+                                 //   intent.putExtra("data_model",.data)
                                     intent.action = ACTION_MSG_CHAT_ACTIVITY
                                     startActivity(intent)
                                 } else {

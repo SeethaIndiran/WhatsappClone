@@ -18,12 +18,11 @@ interface ApiService {
 
     // FCM v1 API for sending notifications
 
+
+    @Headers("Content-Type: application/json")
     @POST("v1/projects/chattingapp-39d34/messages:send")
-    @Headers(
-        "Content-Type: application/json",
-        "Accept: application/json")
     fun sendNotification(
-        @Body body: Sender,
+        @Body body: String,
         @Header("Authorization") authToken: String   // OAuth token
     ): Call<MyResponse>
 }

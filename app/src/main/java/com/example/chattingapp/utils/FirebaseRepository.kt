@@ -148,7 +148,7 @@ class FirebaseRepository @Inject constructor(
         webRTCClient.closeConnection()
     }
     fun sendEndCall(username: String){
-        onTransferEventToSocket(DataCall("",0,"","",target!!,"end_call"))
+        onTransferEventToSocket(DataCall("","","","",target!!,"end_call"))
     firebaseClient.clearLatestStatus(username)
     }
 

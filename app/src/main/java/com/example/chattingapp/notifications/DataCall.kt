@@ -4,7 +4,7 @@ import java.io.Serializable
 
 data class DataCall (
     val user:String="",
-    val icon:Int = 0,
+    val icon:String = "",
     val body:String = "",
     val title:String = "",
     val target:String="",

@@ -184,7 +184,7 @@ class WebRTCClient @Inject constructor(private val context: Context,
                     override fun onSetSuccess() {
                         super.onSetSuccess()
                         listener?.onTransferEventToSocket(
-                           DataCall(userName,0,desc?.description!!,"",target,"offer")
+                           DataCall(userName,"",desc?.description!!,"",target,"offer")
                         )
                     }
                 },desc)
@@ -200,7 +200,7 @@ class WebRTCClient @Inject constructor(private val context: Context,
                     override fun onSetSuccess() {
                         super.onSetSuccess()
                         listener?.onTransferEventToSocket(
-                            DataCall(userName,0,desc?.description!!,"",
+                            DataCall(userName,"",desc?.description!!,"",
                                 target,"answer")) }
                 },desc)
             }
@@ -218,7 +218,7 @@ class WebRTCClient @Inject constructor(private val context: Context,
     fun sendIceCandidate(target: String,iceCandidate: IceCandidate){
         addIceCandidateToPeer(iceCandidate)
         listener?.onTransferEventToSocket(
-            DataCall(userName,0,gson.toJson(iceCandidate),"",target,"ice_candidate")
+            DataCall(userName,"",gson.toJson(iceCandidate),"",target,"ice_candidate")
         )
     }
 

@@ -149,7 +149,7 @@ private var serviceRepository:MainServiceRepository? = null
         val type = mRemoteMessage.data["type"]
         val time = mRemoteMessage.data["timeStamp"]
 
-  val data = DataCall(user!!,icon!!.toInt(),body!!,title!!,target!!,type!!)
+  val data = DataCall(user!!,icon!!,body!!,title!!,target!!,type!!)
 
         val notification = mRemoteMessage.notification
         val j= user!!.replace("[\\D]".toRegex(),"").toInt()
@@ -220,7 +220,7 @@ private var serviceRepository:MainServiceRepository? = null
         val time = mRemoteMessage.data["timeStamp"]
 
         val data = DataCall(user!!,
-            icon!!.toInt(),
+            icon!!,
             body!!,
             title!!,
             target!!,
