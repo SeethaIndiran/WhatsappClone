@@ -101,5 +101,6 @@
 ## Screenshots
 
 ![image alt](https://github.com/SeethaIndiran/WhatsappClone/blob/0caf3ed86c0b8be32fecdaeca01485d001ec1447/Copy%20of%20Untitled%20Design%20(2).png)
+![image alt](https://github.com/SeethaIndiran/WhatsappClone/blob/5c0dc9e574b36876c18397de74ee56e1554c29ba/Copy%20of%20Untitled%20Design%20(3).png)
     
      
