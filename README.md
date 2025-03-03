@@ -98,6 +98,8 @@
        4. Run the app on an emulator or physical device
        
     
-    
+## Screenshots
+
+![image alt](https://github.com/SeethaIndiran/WhatsappClone/blob/0caf3ed86c0b8be32fecdaeca01485d001ec1447/Copy%20of%20Untitled%20Design%20(2).png)
     
      
